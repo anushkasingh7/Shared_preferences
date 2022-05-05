@@ -15,19 +15,22 @@ class _HomeScreenState extends State<HomeScreen> {
     'Number': '',
   };
   Map<String, dynamic> getStoreDta ={};
+
+
   Future insertData(data) async {
     print(data);
     SharedPreferences pref = await SharedPreferences.getInstance();
     
     pref.setString('storage', json.encode(data));
     print('data inserted');
+    getData();
 
   }
 
   Future getData() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     
-    final storeData = await json.decode(pref.getString('storage'));
+    final storeData = await json.decode(pref.getString('storage')!);
     setState(() {
        final getStoreData= storeData;
       print(getStoreData);
@@ -35,7 +38,18 @@ class _HomeScreenState extends State<HomeScreen> {
     
   }
 
-  Future removeData() async {}
+  Future removeData() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.remove('storage');
+    getData();
+  }
+
+  @override
+  void initState() {
+    getData();
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -140,7 +154,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     ElevatedButton(
                       child: Text("Remove"),
-                      onPressed: () {},
+                      onPressed: () {
+                        removeData();
+                      },
                       style: ElevatedButton.styleFrom(
                         padding: EdgeInsets.all(8),
                         fixedSize: Size(100, 38),
@@ -158,14 +174,14 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(height: 40),
               Text(
-                "Show Name: ",
+                "Show Name: ${getStoreDta['Name']} ",
                 style: TextStyle(fontSize: 20),
               ),
               SizedBox(
                 height: 20,
               ),
               Text(
-                "Show Number: ",
+                "Show Number: ${getStoreDta['Number']}",
                 style: TextStyle(fontSize: 20),
               ),
             ],
